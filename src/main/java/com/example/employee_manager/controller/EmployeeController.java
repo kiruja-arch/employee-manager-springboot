@@ -20,10 +20,11 @@ public class EmployeeController {
     }
 
     // Display all employees
-    @GetMapping("/")
+    @GetMapping("/employees")
     public String listEmployees(Model model) {
         model.addAttribute("employees",
                 employeeService.getAllEmployees());
+
         return "employees";
     }
 
@@ -31,6 +32,7 @@ public class EmployeeController {
     @GetMapping("/employees/new")
     public String showCreateForm(Model model) {
         model.addAttribute("employee", new Employee());
+
         return "employee-form";
     }
 
@@ -45,13 +47,15 @@ public class EmployeeController {
         }
 
         employeeService.saveEmployee(employee);
-        return "redirect:/";
+
+        return "redirect:/employees";
     }
 
     // Show edit employee form
-    @GetMapping("/employees/edit/{id}")
+    @GetMapping("/employees/{id}/edit")
     public String showEditForm(
-            @PathVariable Long id, Model model) {
+            @PathVariable Long id,
+            Model model) {
 
         Employee employee = employeeService
                 .getEmployeeById(id)
@@ -60,30 +64,33 @@ public class EmployeeController {
                                 "Invalid employee Id: " + id));
 
         model.addAttribute("employee", employee);
-        return "employee-form";
+
+        return "edit-employee";
     }
 
     // Update employee
-    @PostMapping("/employees/update/{id}")
+    @PostMapping("/employees/{id}/update")
     public String updateEmployee(
             @PathVariable Long id,
             @Valid @ModelAttribute("employee") Employee employee,
             BindingResult result) {
 
         if (result.hasErrors()) {
-            return "employee-form";
+            return "edit-employee";
         }
 
         employee.setId(id);
         employeeService.saveEmployee(employee);
 
-        return "redirect:/";
+        return "redirect:/employees";
     }
 
     // Delete employee
-    @GetMapping("/employees/delete/{id}")
+    @PostMapping("/employees/{id}/delete")
     public String deleteEmployee(@PathVariable Long id) {
+
         employeeService.deleteEmployee(id);
-        return "redirect:/";
+
+        return "redirect:/employees";
     }
 }
